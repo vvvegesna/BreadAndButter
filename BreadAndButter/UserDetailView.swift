@@ -22,8 +22,9 @@ struct UserDetailView: View {
                         Text(friend.name)
                     }
                 }
-                .padding()
             }
+            .padding(.leading)
         }
+        .navigationBarTitle("User Deatils", displayMode: .inline)
     }
 }

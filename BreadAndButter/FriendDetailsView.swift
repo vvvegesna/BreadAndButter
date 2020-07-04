@@ -22,12 +22,26 @@ struct FriendDetailsView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(friend.name)
+                .padding()
+                .font(.headline)
+            Section {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading) {
+                        Text("Age: \(asUser?.age ?? 0)")
+                        Text("Company: \(asUser?.company ?? "Unknown")")
+                    }
+                    Spacer()
+                    Text(verbatim: "isActive: \(asUser?.isActive ?? true)")
+                }
+            }
+            .padding()
             Section(header: Text("Tags").font(.largeTitle)) {
                 List(asUser?.tags ?? [], id:\.self) {
                     Text($0)
                 }
-            .padding()
             }
+            .padding(.leading)
         }
+        .navigationBarTitle("Friend Details", displayMode: .inline)
     }
 }
