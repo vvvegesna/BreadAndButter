@@ -10,21 +10,31 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var users = [User]()
+    @State private var isOffline = false
     
     var body: some View {
         NavigationView {
-            List(users, id:\.id) { user in
-                NavigationLink(destination: UserDetailView(user: user, users: self.users)) {
-                    VStack(alignment: .leading) {
-                        Text(user.name)
-                            .font(.headline)
-                        Text(user.address)
-                            .foregroundColor(.secondary)
+            Group {
+                if isOffline {
+                    Text("Date not available!")
+                } else {
+                    List(users, id:\.id) { user in
+                        NavigationLink(destination: UserDetailView(user: user, users: self.users)) {
+                            VStack(alignment: .leading) {
+                                Text(user.name)
+                                    .font(.headline)
+                                Text(user.address)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                     }
+                    .onAppear(perform: loadData)
                 }
             }
-            .onAppear(perform: loadData)
-            .navigationBarTitle("Users")
+            .alert(isPresented: $isOffline, content: { () -> Alert in
+                Alert(title: Text("Whoops!"), message: Text("Device lost internet connection"), dismissButton: .default(Text("Okay"), action: loadData))
+            })
+                .navigationBarTitle("Users")
         }
     }
     
@@ -40,9 +50,14 @@ struct ContentView: View {
                     DispatchQueue.main.async {
                         self.users = decodedResponse
                     }
-                    return
+                } else {
+                    print("Error in decoding JSON data")
                 }
-                print("Fetch failed: \(error?.localizedDescription ?? "Unknown Error")")
+                return
+            }
+            print("Fetch failed: \(error?.localizedDescription ?? "Unknown Error")")
+            DispatchQueue.main.async {
+                self.isOffline = true
             }
         }.resume()
     }
