@@ -12,12 +12,7 @@ struct FriendDetailsView: View {
     var friend: Friend
     var users: [User]
     
-    var asUser: User? {
-        guard let asUser = users.first(where: { (user) -> Bool in
-            user.id == self.friend.id
-        }) else { return nil }
-        return asUser
-    }
+    @State private var asUser: User?
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -42,6 +37,14 @@ struct FriendDetailsView: View {
             }
             .padding(.leading)
         }
+        .onAppear(perform: friendToUser)
         .navigationBarTitle("Friend Details", displayMode: .inline)
+    }
+    
+    func friendToUser() {
+        guard let asUser = users.first(where: { (user) -> Bool in
+            user.id == self.friend.id
+        }) else { return }
+        self.asUser = asUser
     }
 }
